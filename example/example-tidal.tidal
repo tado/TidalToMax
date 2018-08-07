@@ -1,0 +1,109 @@
+-- 01. Expanding Tidal
+
+import Sound.Tidal.TidalToMax
+
+m1 <- maxStream "127.0.0.1" 57130
+
+m2 <- maxStream "127.0.0.1" 57130
+
+m3 <- maxStream "127.0.0.1" 57130
+
+m4 <- maxStream "127.0.0.1" 57130
+
+hush = mapM_ ($ silence)[d1, d2, d3, d4, d5, d6, d7, d8, d9, m1, m2, m3, m4]
+
+m1
+  $sound "bd*4"
+
+m1
+  $sound "[bd*2] [bd*4]"
+
+m1
+  $ whenmod 7 6 (fast 1.5)
+  $ sometimesBy 0.2 (0.125 <~)
+  $ whenmod 4 3 (rev)
+  $ every 5 (0.25 ~>)
+  $ sound "[bd*2] [bd*4]" 
+
+-- 02. Send Args to MAX
+
+m1
+  $ every 9 (brak)
+  $ whenmod 7 6 (fast 1.5)
+  $ sometimesBy 0.2 (0.125 <~)
+  $ whenmod 4 3 (rev)
+  $ every 5 (0.25 ~>)
+  $ sound "[saw*2] [saw*4]"
+  # n (choose [0, 4, 5, 7, 9])
+  |+| n "{-36 -24 -17 -12 0}%5"
+  # pan 0.5
+  # cutoff (scale 200 10000 $slow 4 $sine1)
+  # resonance 0.1
+
+-- 03. Polyphony
+
+m1
+  $ jux (rev)
+  $ sometimesBy 0.2 (0.125 ~>)
+  $ sometimesBy 0.3 (jux (0.125 <~))
+  $ sound "saw({3, 5}, 8, {0, 2})"
+  # sustain "0.05 1.0"
+  # n "{0 5 9}%4"
+  |-| n "{12, 7, 0}"
+  |-| n "<0 4 5 7>/8"
+  # cutoff (scale 10 10000 $slow 16 $sine1)
+  # resonance (scale 0.0 0.5 $rand)
+  # gain "1.0"
+
+-- 04. Multi Synth
+
+hush
+
+cps(130/120)
+
+m1
+  -- $jux (iter 8)
+  -- $sometimesBy 0.4 (0.125 ~>)
+  $sound "saw(3, 8, {0, 3, 6})"
+  #sustain "0.1 0.3"
+  # n (choose [0, 5, 7, 12])
+  |+| n (choose [-12, 0, -5])
+  |+| n "{0, 7}"
+  -- |+| n "<-12 0 -5 7>/4"
+  # cutoff (scale 200 15000 $slow 4 $sine1)
+  # resonance 0.4
+  #gain "0.3"
+
+m2
+  -- $sometimesBy 0.3 (jux rev)
+  -- $jux (iter 2)
+  -- $jux (iter 4)
+  $sound "sweep(3, 8, {0, 3, 6})"
+  #sustain "0.05 0.3"
+  # n "{-60 -48 -36 -24}%6"
+  # cutoff (scale 1000 8000 $rand)
+  # resonance 0.4
+  # pan (rand)
+  # gain "0.3"
+
+m3
+  $slow 2
+  -- $jux (iter 4)
+  -- $sometimesBy 0.4 (0.125 ~>)
+  $sound "sin(3, 8, {0, 3, 6})"
+  #sustain "0.1 1.0"
+  # n (choose [0, 5, 7, 12])
+  |+| n (choose [-12, -24, 0, -5])
+  |+| n "{0,7}"
+  -- |+| n "<0 7 12>/8"
+  # cutoff 10000
+  # resonance 0.0
+  #gain "0.1"
+
+m1 silence
+
+m2 silence  
+
+m3 silence  
+
+hush
